@@ -1,6 +1,6 @@
 # Получаем и выводим весь список контактов в виде таблицы (console.table)
 
-https://ibb.co/bJT2L2V
+https://ibb.co/fdzHSBy
 
 # Получаем контакт по id
 
