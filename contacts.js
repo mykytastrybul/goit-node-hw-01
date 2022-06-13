@@ -5,42 +5,58 @@ const { v4: uuidv4 } = require("uuid");
 const contactsPath = path.normalize("./db/contacts.json");
 
 async function listContacts() {
-  const contacts = await fs.readFile(contactsPath);
+  try {
+    const data = await fs.readFile(contactsPath, "utf8");
 
-  return JSON.parse(contacts);
+    console.log(JSON.parse(data));
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function getContactById(contactId) {
-  const contacts = await listContacts();
+  try {
+    const data = await fs.readFile(contactsPath, "utf8");
+    const contacts = JSON.parse(data);
 
-  return (
-    contacts.find((contact) => contact.id === contactId) ||
-    console.log("No contact with id: ", contactId)
-  );
+    console.log(contacts.find(({ id }) => id === contactId));
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function removeContact(contactId) {
-  const contacts = await listContacts();
-  const index = contacts.findIndex(
-    (contact) => contact.id === JSON.stringify(contactId)
-  );
-  if (index === -1) return console.log("No contact with id: ", contactId);
-  const removedContact = contacts.splice(index, 1);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts));
-  return removedContact;
+  try {
+    const data = await fs.readFile(contactsPath, "utf8");
+    const contacts = JSON.parse(data);
+    const newContactList = JSON.stringify(
+      contacts.filter(({ id }) => id !== contactId)
+    );
+
+    fs.writeFile(contactsPath, newContactList);
+    console.log(`Remove contact with id=${contactId}`);
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function addContact(name, email, phone) {
-  const contacts = await listContacts();
-  const newContact = {
-    id: uuidv4(),
-    name,
-    email,
-    phone,
-  };
-  contacts.push(newContact);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts));
-  return newContact;
+  try {
+    const data = await fs.readFile(contactsPath, "utf8");
+    const contacts = JSON.parse(data);
+    const newContact = {
+      id: uuidv4(),
+      name,
+      email,
+      phone,
+    };
+
+    contacts.push(newContact);
+    fs.writeFile(contactsPath, JSON.stringify(contacts));
+    console.log(`Added new contact: ${JSON.stringify(newContact)}`);
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 module.exports = {
